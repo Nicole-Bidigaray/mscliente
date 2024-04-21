@@ -1,5 +1,7 @@
 package com.fiap.techchallenger4.mscliente.domain.dto;
 
+import java.time.LocalDateTime;
+
 public record ClienteDtoResponse (
         Long codigoCliente,
         String nome,
@@ -12,6 +14,7 @@ public record ClienteDtoResponse (
         String bairro,
         String cidade,
         String estado,
-        String telefone
+        String telefone,
+        LocalDateTime dataCriacao
 ) {
 }
