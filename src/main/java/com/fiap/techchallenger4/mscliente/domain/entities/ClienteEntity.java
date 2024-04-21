@@ -1,11 +1,16 @@
 package com.fiap.techchallenger4.mscliente.domain.entities;
 
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoResponse;
-import com.fiap.techchallenger4.mscliente.domain.exceptions.BusinessException;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "clientes")
+@Getter
+@Setter
+@NoArgsConstructor
 public class ClienteEntity {
 
     @Id
@@ -23,9 +28,7 @@ public class ClienteEntity {
     private String estado;
     private String telefone;
 
-    public ClienteEntity(){}
-
-    public ClienteEntity(Long codigoCliente, String nome, String email, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) {
+    public ClienteEntity(Long codigoCliente, String nome, String cpf, String email, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) {
         this.codigoCliente = codigoCliente;
         this.nome = nome;
         this.cpf = cpf;
@@ -38,58 +41,6 @@ public class ClienteEntity {
         this.cidade = cidade;
         this.estado = estado;
         this.telefone = telefone;
-    }
-
-    public Long getCodigoCliente() {
-        return codigoCliente;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public String getLogradouro() {
-        return logradouro;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public String getBairro() {
-        return bairro;
-    }
-
-    public String getCidade() {
-        return cidade;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public String getTelefone() {
-        return telefone;
     }
 
     public ClienteDtoResponse toDto() {

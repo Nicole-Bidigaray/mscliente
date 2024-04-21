@@ -84,7 +84,8 @@ public class ClienteService {
         ClienteEntity clienteAtualizado = new ClienteEntity(
             clienteExistente.getCodigoCliente(),
             clienteDto.nome(),
-            clienteDto.cpf(), clienteDto.email(),
+            clienteDto.cpf(),
+            clienteDto.email(),
             clienteDto.cep(),
             clienteDto.logradouro(),
             clienteDto.numero(),
