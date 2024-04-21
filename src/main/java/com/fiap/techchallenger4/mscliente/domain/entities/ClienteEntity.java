@@ -103,11 +103,11 @@ public class ClienteEntity {
     }
 
     private boolean cpfValido(String cpf) {
-        return cpf.matches("[0-9]{11}");
+        return cpf.matches("[0-9]{3}\\\\.[0-9]{3}\\\\.[0-9]{3}-[0-9]{2}");
     }
 
     private boolean cepValido(String cep) {
-        return cep.matches("[0-9]{8}");
+        return cep.matches("[0-9]{5}-[0-9]{3}");
     }
 
     private boolean telefoneValido(String telefone) {
