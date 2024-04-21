@@ -10,7 +10,7 @@ public class ClienteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long codigoCliente;
     private String nome;
     private String cpf;
     private String cep;
@@ -39,9 +39,9 @@ public class ClienteEntity {
     }
 
 
-    public ClienteEntity(Long id, String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
+    public ClienteEntity(long codigoCliente, String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
         validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
-        this.id = id;
+        this.codigoCliente = codigoCliente;
         this.nome = nome;
         this.cpf = cpf;
         this.cep = cep;
@@ -55,11 +55,11 @@ public class ClienteEntity {
     }
 
     public ClienteDtoResponse toDto() {
-        return new ClienteDtoResponse(id, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+        return new ClienteDtoResponse(codigoCliente, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 
-    public Long getId() {
-        return id;
+    public long getCodigoCliente() {
+        return codigoCliente;
     }
 
     public String getNome() {

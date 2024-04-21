@@ -33,13 +33,13 @@ public class ClienteController {
         }
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar cliente por ID")
+    @GetMapping("/{codigoCliente}")
+    @Operation(summary = "Buscar cliente pelo seu código")
     @ApiResponseSwaggerOk
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> buscarClientePorId(@PathVariable Long id) {
+    public ResponseEntity<?> buscarClientePorCodigo(@PathVariable long codigoCliente) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(clienteService.buscarClientePorId(id));
+            return ResponseEntity.status(HttpStatus.OK).body(clienteService.buscarClientePorId(codigoCliente));
         } catch (BusinessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageErrorHandler.create(e.getMessage()));
         }
@@ -56,23 +56,23 @@ public class ClienteController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{codigoCliente}")
     @Operation(summary = "Atualizar um cliente")
     @ApiResponseSwaggerOk
-    public ResponseEntity<?> atualizarCliente(@PathVariable Long id, @RequestBody ClienteDtoRequest clienteDto) {
+    public ResponseEntity<?> atualizarCliente(@PathVariable long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(clienteService.atualizarCliente(id, clienteDto));
+            return ResponseEntity.status(HttpStatus.OK).body(clienteService.atualizarCliente(codigoCliente, clienteDto));
         } catch (BusinessException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageErrorHandler.create(e.getMessage()));
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{codigoCliente}")
     @Operation(summary = "Excluir um cliente")
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> excluirCliente(@PathVariable Long id) {
+    public ResponseEntity<?> excluirCliente(@PathVariable long codigoCliente) {
         try {
-            clienteService.excluirCliente(id);
+            clienteService.excluirCliente(codigoCliente);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (BusinessException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(MessageErrorHandler.create(e.getMessage()));

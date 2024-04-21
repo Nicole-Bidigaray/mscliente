@@ -1,7 +1,7 @@
 package com.fiap.techchallenger4.mscliente.domain.dto;
 
 public record ClienteDtoResponse (
-        Long id,
+        long codigoCliente,
         String nome,
         String cpf,
         String cep,

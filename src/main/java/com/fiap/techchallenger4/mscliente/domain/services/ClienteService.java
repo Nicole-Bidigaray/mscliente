@@ -37,11 +37,11 @@ public class ClienteService {
         return clienteRepository.save(cliente.toEntity()).toDto();
     }
 
-    public ClienteDtoResponse atualizarCliente(Long id, ClienteDtoRequest clienteDto) throws BusinessException {
-        ClienteEntity clienteExistente = buscarClienteEntity(id);
+    public ClienteDtoResponse atualizarCliente(long codigoCliente, ClienteDtoRequest clienteDto) throws BusinessException {
+        ClienteEntity clienteExistente = buscarClienteEntity(codigoCliente);
 
         ClienteEntity clienteAtualizado = new ClienteEntity(
-                clienteExistente.getId(),
+                clienteExistente.getCodigoCliente(),
                 clienteDto.nome(),
                 clienteDto.cpf(),
                 clienteDto.cep(),
