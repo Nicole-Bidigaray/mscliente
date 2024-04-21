@@ -13,6 +13,7 @@ public class ClienteEntity {
     private Long codigoCliente;
     private String nome;
     private String cpf;
+    private String email;
     private String cep;
     private String logradouro;
     private String numero;
@@ -24,26 +25,12 @@ public class ClienteEntity {
 
     public ClienteEntity(){}
 
-
-    public ClienteEntity(String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
-        validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
-        this.nome = nome;
-        this.cpf = cpf;
-        this.cep = cep;
-        this.logradouro = logradouro;
-        this.numero = numero;
-        this.complemento = complemento;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.estado = estado;
-        this.telefone = telefone;
-    }
-
-    public ClienteEntity(Long codigoCliente, String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
-        validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+    public ClienteEntity(Long codigoCliente, String nome, String email, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
+        validarDados(nome, cpf, email, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
         this.codigoCliente = codigoCliente;
         this.nome = nome;
         this.cpf = cpf;
+        this.email = email;
         this.cep = cep;
         this.logradouro = logradouro;
         this.numero = numero;
@@ -55,7 +42,7 @@ public class ClienteEntity {
     }
 
     public ClienteDtoResponse toDto() {
-        return new ClienteDtoResponse(codigoCliente, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+        return new ClienteDtoResponse(codigoCliente, nome, cpf, email, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 
     public Long getCodigoCliente() {
@@ -68,6 +55,10 @@ public class ClienteEntity {
 
     public String getCpf() {
         return cpf;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getCep() {
@@ -103,42 +94,89 @@ public class ClienteEntity {
     }
 
     private boolean cpfValido(String cpf) {
-        return cpf.matches("[0-9]{3}\\\\.[0-9]{3}\\\\.[0-9]{3}-[0-9]{2}");
+        return cpf.matches("\\\\d{3}\\\\.\\\\d{3}\\\\.\\\\d{3}-\\\\d{2}");
+    }
+
+    private boolean emailValido(String email) {
+        return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
     private boolean cepValido(String cep) {
-        return cep.matches("[0-9]{5}-[0-9]{3}");
+        return cep.matches("\\\\d{5}-\\\\d{3}");
     }
 
     private boolean telefoneValido(String telefone) {
-        return telefone.matches("\\([1-9]{2}\\) [9]{0,1}[0-9]{4}-[0-9]{4}");
+        return telefone.matches("\\(\\d{2}\\) 9?\\d{4}-\\d{4}");
     }
 
-    private void validarDados(String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
+    private void validarDados(String nome, String cpf, String email, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
+        validarNome(nome);
+        validarCPF(cpf);
+        validarEmail(email);
+        validarCEP(cep);
+        validarLogradouro(logradouro);
+        validarNumero(numero);
+        validarBairro(bairro);
+        validarCidade(cidade);
+        validarEstado(estado);
+        validarTelefone(telefone);
+    }
+
+    private void validarNome(String nome) throws BusinessException {
         if (nome == null || nome.isBlank()) {
             throw new BusinessException("Nome não pode ser vazio");
         }
+    }
+
+    private void validarCPF(String cpf) throws BusinessException {
         if (cpf == null || cpf.isBlank() || !cpfValido(cpf)) {
             throw new BusinessException("CPF inválido");
         }
+    }
+
+    private void validarEmail(String email) throws BusinessException {
+        if (email == null || email.isBlank() || !emailValido(email)) {
+            throw new BusinessException("Email inválido");
+        }
+    }
+
+    private void validarCEP(String cep) throws BusinessException {
         if (cep == null || cep.isBlank() || !cepValido(cep)) {
             throw new BusinessException("CEP inválido");
         }
+    }
+
+    private void validarLogradouro(String logradouro) throws BusinessException {
         if (logradouro == null || logradouro.isBlank()) {
             throw new BusinessException("Logradouro não pode ser vazio");
         }
+    }
+
+    private void validarNumero(String numero) throws BusinessException {
         if (numero == null || numero.isBlank()) {
             throw new BusinessException("Número não pode ser vazio");
         }
+    }
+
+    private void validarBairro(String bairro) throws BusinessException {
         if (bairro == null || bairro.isBlank()) {
             throw new BusinessException("Bairro não pode ser vazio");
         }
+    }
+
+    private void validarCidade(String cidade) throws BusinessException {
         if (cidade == null || cidade.isBlank()) {
             throw new BusinessException("Cidade não pode ser vazio");
         }
+    }
+
+    private void validarEstado(String estado) throws BusinessException {
         if (estado == null || estado.isBlank()) {
             throw new BusinessException("Estado não pode ser vazio");
         }
+    }
+
+    private void validarTelefone(String telefone) throws BusinessException {
         if (telefone == null || telefone.isBlank() || !telefoneValido(telefone)) {
             throw new BusinessException("Telefone inválido");
         }

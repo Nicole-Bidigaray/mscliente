@@ -7,6 +7,7 @@ public record ClienteDtoRequest(
         Long codigoCliente,
         String nome,
         String cpf,
+        String email,
         String cep,
         String logradouro,
         String numero,
@@ -17,6 +18,6 @@ public record ClienteDtoRequest(
         String telefone
 ) {
     public ClienteEntity toEntity() throws BusinessException {
-        return new ClienteEntity(codigoCliente, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+        return new ClienteEntity(codigoCliente, nome, cpf, email, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 }

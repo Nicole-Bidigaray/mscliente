@@ -4,6 +4,7 @@ public record ClienteDtoResponse (
         Long codigoCliente,
         String nome,
         String cpf,
+        String email,
         String cep,
         String logradouro,
         String numero,

@@ -48,6 +48,7 @@ public class ClienteService {
                 clienteExistente.getCodigoCliente(),
                 clienteDto.nome(),
                 clienteDto.cpf(),
+                clienteDto.email(),
                 clienteDto.cep(),
                 clienteDto.logradouro(),
                 clienteDto.numero(),
