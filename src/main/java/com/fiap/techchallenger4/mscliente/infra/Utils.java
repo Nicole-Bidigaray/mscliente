@@ -20,7 +20,6 @@ public class Utils {
                 acao.get();
                 return ResponseEntity.noContent().build();
             }
-
             return ResponseEntity.status(httpStatus).body(acao.get());
         } catch (EntidadeNaoEncontrada e){
             return ResponseEntity
