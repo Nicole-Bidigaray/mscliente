@@ -37,9 +37,9 @@ public class ClienteController {
     @Operation(summary = "Buscar cliente pelo seu código")
     @ApiResponseSwaggerOk
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> buscarClientePorCodigo(@PathVariable long codigoCliente) {
+    public ResponseEntity<?> buscarClientePorCodigo(@PathVariable Long codigoCliente) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(clienteService.buscarClientePorId(codigoCliente));
+            return ResponseEntity.status(HttpStatus.OK).body(clienteService.buscarClientePorCodigo(codigoCliente));
         } catch (BusinessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageErrorHandler.create(e.getMessage()));
         }
@@ -59,7 +59,7 @@ public class ClienteController {
     @PutMapping("/{codigoCliente}")
     @Operation(summary = "Atualizar um cliente")
     @ApiResponseSwaggerOk
-    public ResponseEntity<?> atualizarCliente(@PathVariable long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
+    public ResponseEntity<?> atualizarCliente(@PathVariable Long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(clienteService.atualizarCliente(codigoCliente, clienteDto));
         } catch (BusinessException e) {
@@ -70,7 +70,7 @@ public class ClienteController {
     @DeleteMapping("/{codigoCliente}")
     @Operation(summary = "Excluir um cliente")
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> excluirCliente(@PathVariable long codigoCliente) {
+    public ResponseEntity<?> excluirCliente(@PathVariable Long codigoCliente) {
         try {
             clienteService.excluirCliente(codigoCliente);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

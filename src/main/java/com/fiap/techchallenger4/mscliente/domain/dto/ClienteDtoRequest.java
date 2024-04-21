@@ -4,6 +4,7 @@ import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
 import com.fiap.techchallenger4.mscliente.domain.exceptions.BusinessException;
 
 public record ClienteDtoRequest(
+        Long codigoCliente,
         String nome,
         String cpf,
         String cep,
@@ -16,6 +17,6 @@ public record ClienteDtoRequest(
         String telefone
 ) {
     public ClienteEntity toEntity() throws BusinessException {
-        return new ClienteEntity(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+        return new ClienteEntity(codigoCliente, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 }

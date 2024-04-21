@@ -16,16 +16,16 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    private ClienteEntity buscarClienteEntity(Long id) throws BusinessException {
-        return clienteRepository.findById(id).orElseThrow(() -> new BusinessException("Cliente não encontrado"));
+    private ClienteEntity buscarClienteEntity(Long codigoCliente) throws BusinessException {
+        return clienteRepository.findByCodigoCliente(codigoCliente).orElseThrow(() -> new BusinessException("Cliente não encontrado"));
     }
 
     public List<ClienteDtoResponse> listarClientes() {
         return clienteRepository.findAll().stream().map(ClienteEntity::toDto).toList();
     }
 
-    public ClienteDtoResponse buscarClientePorId(Long id) throws BusinessException {
-        ClienteEntity cliente = buscarClienteEntity(id);
+    public ClienteDtoResponse buscarClientePorCodigo(Long codigoCliente) throws BusinessException {
+        ClienteEntity cliente = buscarClienteEntity(codigoCliente);
         return cliente.toDto();
     }
 
@@ -37,7 +37,7 @@ public class ClienteService {
         return clienteRepository.save(cliente.toEntity()).toDto();
     }
 
-    public ClienteDtoResponse atualizarCliente(long codigoCliente, ClienteDtoRequest clienteDto) throws BusinessException {
+    public ClienteDtoResponse atualizarCliente(Long codigoCliente, ClienteDtoRequest clienteDto) throws BusinessException {
         ClienteEntity clienteExistente = buscarClienteEntity(codigoCliente);
 
         ClienteEntity clienteAtualizado = new ClienteEntity(
@@ -56,9 +56,9 @@ public class ClienteService {
         return clienteRepository.save(clienteAtualizado).toDto();
     }
 
-    public void excluirCliente(Long id) throws BusinessException {
-        buscarClienteEntity(id);
-        clienteRepository.deleteById(id);
+    public void excluirCliente(Long codigoCliente) throws BusinessException {
+        buscarClienteEntity(codigoCliente);
+        clienteRepository.deleteById(codigoCliente);
     }
 
 }

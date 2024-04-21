@@ -10,7 +10,7 @@ public class ClienteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long codigoCliente;
+    private Long codigoCliente;
     private String nome;
     private String cpf;
     private String cep;
@@ -24,8 +24,10 @@ public class ClienteEntity {
 
     public ClienteEntity(){}
 
+
     public ClienteEntity(String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
         validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+        this.codigoCliente = codigoCliente;
         this.nome = nome;
         this.cpf = cpf;
         this.cep = cep;
@@ -38,8 +40,7 @@ public class ClienteEntity {
         this.telefone = telefone;
     }
 
-
-    public ClienteEntity(long codigoCliente, String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
+    public ClienteEntity(Long codigoCliente, String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
         validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
         this.codigoCliente = codigoCliente;
         this.nome = nome;
@@ -58,7 +59,7 @@ public class ClienteEntity {
         return new ClienteDtoResponse(codigoCliente, nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 
-    public long getCodigoCliente() {
+    public Long getCodigoCliente() {
         return codigoCliente;
     }
 
