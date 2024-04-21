@@ -24,6 +24,39 @@ public class ClienteService {
         return cliente;
     }
 
+    private void validarClienteDto(ClienteDtoRequest dto) throws BusinessException {
+        if (dto.nome().isBlank()) {
+            throw new BusinessException("Nome não pode ser vazio.");
+        }
+        if (dto.cpf().isBlank() || !dto.cpf().matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
+            throw new BusinessException("CPF inválido ou vazio. Deve estar no formato XXX.XXX.XXX-XX.");
+        }
+        if (dto.email().isBlank() || !dto.email().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+            throw new BusinessException("Email inválido ou vazio. Formato esperado: exemplo@dominio.com");
+        }
+        if (dto.cep().isBlank() || !dto.cep().matches("\\d{5}-\\d{3}")) {
+            throw new BusinessException("CEP inválido ou vazio. Deve estar no formato XXXXX-XXX.");
+        }
+        if (dto.logradouro().isBlank()) {
+            throw new BusinessException("Logradouro não pode ser vazio.");
+        }
+        if (dto.numero().isBlank()) {
+            throw new BusinessException("Número não pode ser vazio.");
+        }
+        if (dto.bairro().isBlank()) {
+            throw new BusinessException("Bairro não pode ser vazio.");
+        }
+        if (dto.cidade().isBlank()) {
+            throw new BusinessException("Cidade não pode ser vazia.");
+        }
+        if (dto.estado().isBlank()) {
+            throw new BusinessException("Estado não pode ser vazio.");
+        }
+        if (dto.telefone().isBlank() || !dto.telefone().matches("\\(\\d{2}\\) 9?\\d{4}-\\d{4}")) {
+            throw new BusinessException("Telefone inválido ou vazio. Deve estar no formato (XX) 9XXXX-XXXX.");
+        }
+    }
+
     public List<ClienteDtoResponse> listarClientes() {
         return clienteRepository.findAll().stream().map(ClienteEntity::toDto).toList();
     }
@@ -34,29 +67,32 @@ public class ClienteService {
     }
 
     public ClienteDtoResponse cadastrarCliente(ClienteDtoRequest cliente) throws BusinessException {
+        validarClienteDto(cliente);
         ClienteEntity clienteExistente = clienteRepository.findByCpf(cliente.cpf());
         if (clienteExistente != null) {
             throw new BusinessException("Já existe um cliente cadastrado com este CPF");
         }
-        return clienteRepository.save(cliente.toEntity()).toDto();
+        ClienteEntity novoCliente = cliente.toEntity();
+        ClienteEntity clienteSalvo = clienteRepository.save(novoCliente);
+        return clienteSalvo.toDto();
     }
 
     public ClienteDtoResponse atualizarCliente(Long codigoCliente, ClienteDtoRequest clienteDto) throws BusinessException {
+        validarClienteDto(clienteDto);
         ClienteEntity clienteExistente = buscarClienteEntity(codigoCliente);
 
         ClienteEntity clienteAtualizado = new ClienteEntity(
-                clienteExistente.getCodigoCliente(),
-                clienteDto.nome(),
-                clienteDto.cpf(),
-                clienteDto.email(),
-                clienteDto.cep(),
-                clienteDto.logradouro(),
-                clienteDto.numero(),
-                clienteDto.complemento(),
-                clienteDto.bairro(),
-                clienteDto.cidade(),
-                clienteDto.estado(),
-                clienteDto.telefone()
+            clienteExistente.getCodigoCliente(),
+            clienteDto.nome(),
+            clienteDto.cpf(), clienteDto.email(),
+            clienteDto.cep(),
+            clienteDto.logradouro(),
+            clienteDto.numero(),
+            clienteDto.complemento(),
+            clienteDto.bairro(),
+            clienteDto.cidade(),
+            clienteDto.estado(),
+            clienteDto.telefone()
         );
         return clienteRepository.save(clienteAtualizado).toDto();
     }
