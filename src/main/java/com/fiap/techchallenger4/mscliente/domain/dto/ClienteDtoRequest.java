@@ -1,13 +1,11 @@
 package com.fiap.techchallenger4.mscliente.domain.dto;
 
 import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
-import com.fiap.techchallenger4.mscliente.domain.exceptions.BusinessException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record ClienteDtoRequest(
-        Long codigoCliente,
 
         @NotBlank
         String nome,
@@ -41,7 +39,7 @@ public record ClienteDtoRequest(
         @NotBlank @Pattern(regexp = "\\(\\d{2}\\) 9?\\d{4}-\\d{4}")
         String telefone
 ) {
-    public ClienteEntity toEntity() throws BusinessException {
-        return new ClienteEntity(codigoCliente, nome, cpf, email, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
+    public ClienteEntity toEntity() {
+        return new ClienteEntity(null, nome, cpf, email, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
     }
 }
