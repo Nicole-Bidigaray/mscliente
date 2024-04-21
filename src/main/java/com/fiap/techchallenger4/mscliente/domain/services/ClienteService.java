@@ -17,7 +17,11 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     private ClienteEntity buscarClienteEntity(Long codigoCliente) throws BusinessException {
-        return clienteRepository.findByCodigoCliente(codigoCliente).orElseThrow(() -> new BusinessException("Cliente não encontrado"));
+        ClienteEntity cliente = clienteRepository.findByCodigoCliente(codigoCliente);
+        if (cliente == null) {
+            throw new BusinessException("Cliente não encontrado");
+        }
+        return cliente;
     }
 
     public List<ClienteDtoResponse> listarClientes() {

@@ -27,7 +27,6 @@ public class ClienteEntity {
 
     public ClienteEntity(String nome, String cpf, String cep, String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String telefone) throws BusinessException {
         validarDados(nome, cpf, cep, logradouro, numero, complemento, bairro, cidade, estado, telefone);
-        this.codigoCliente = codigoCliente;
         this.nome = nome;
         this.cpf = cpf;
         this.cep = cep;
