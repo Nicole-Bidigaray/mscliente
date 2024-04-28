@@ -1,11 +1,11 @@
 package com.fiap.techchallenger4.mscliente.domain.controllers;
 
+import br.com.fiap.estrutura.swagger.annotations.ApiResponseSwaggerCreate;
+import br.com.fiap.estrutura.swagger.annotations.ApiResponseSwaggerNoContent;
+import br.com.fiap.estrutura.swagger.annotations.ApiResponseSwaggerOk;
+import br.com.fiap.estrutura.utils.SpringControllerUtils;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import com.fiap.techchallenger4.mscliente.domain.services.ClienteService;
-import com.fiap.techchallenger4.mscliente.infra.Utils;
-import com.fiap.techchallenger4.mscliente.infra.swagger.annotations.ApiResponseSwaggerCreate;
-import com.fiap.techchallenger4.mscliente.infra.swagger.annotations.ApiResponseSwaggerNoContent;
-import com.fiap.techchallenger4.mscliente.infra.swagger.annotations.ApiResponseSwaggerOk;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,28 +33,28 @@ public class ClienteController {
     @ApiResponseSwaggerOk
     @ApiResponseSwaggerNoContent
     public ResponseEntity<?> buscarClientePorCodigo(@PathVariable Long codigoCliente) {
-        return Utils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCodigo(codigoCliente));
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCodigo(codigoCliente));
     }
 
     @PostMapping
     @Operation(summary = "Cadastrar um novo cliente")
     @ApiResponseSwaggerCreate
     public ResponseEntity<?> cadastrarCliente(@RequestBody ClienteDtoRequest cliente) {
-        return Utils.response(HttpStatus.CREATED, () -> clienteService.cadastrarCliente(cliente));
+        return SpringControllerUtils.response(HttpStatus.CREATED, () -> clienteService.cadastrarCliente(cliente));
     }
 
     @PutMapping("/{codigoCliente}")
     @Operation(summary = "Atualizar um cliente")
     @ApiResponseSwaggerOk
     public ResponseEntity<?> atualizarCliente(@PathVariable Long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
-        return Utils.response(HttpStatus.OK, () -> clienteService.atualizarCliente(codigoCliente, clienteDto));
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarCliente(codigoCliente, clienteDto));
     }
 
     @DeleteMapping("/{codigoCliente}")
     @Operation(summary = "Excluir um cliente")
     @ApiResponseSwaggerNoContent
     public ResponseEntity<?> excluirCliente(@PathVariable Long codigoCliente) {
-        return Utils.response(HttpStatus.NO_CONTENT, () -> {
+        return SpringControllerUtils.response(HttpStatus.NO_CONTENT, () -> {
             clienteService.excluirCliente(codigoCliente);
             return null;
         });

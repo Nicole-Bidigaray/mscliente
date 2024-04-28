@@ -1,9 +1,9 @@
 package com.fiap.techchallenger4.mscliente.domain.services;
 
+import br.com.fiap.estrutura.exception.BusinessException;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoResponse;
 import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
-import com.fiap.techchallenger4.mscliente.domain.exceptions.BusinessException;
 import com.fiap.techchallenger4.mscliente.domain.repositories.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
