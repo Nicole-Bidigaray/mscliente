@@ -31,8 +31,14 @@ public class ClienteService {
         if (dto.cpf().isBlank() || !dto.cpf().matches("\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}")) {
             throw new BusinessException("CPF inválido ou vazio. Deve estar no formato XXX.XXX.XXX-XX.");
         }
+        if (clienteRepository.existsByCpf(dto.cpf())) {
+            throw new BusinessException("CPF já cadastrado.");
+        }
         if (dto.email().isBlank() || !dto.email().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
             throw new BusinessException("Email inválido ou vazio. Formato esperado: exemplo@dominio.com");
+        }
+        if (clienteRepository.existsByEmail(dto.email())) {
+            throw new BusinessException("Email já cadastrado.");
         }
         if (dto.cep().isBlank() || !dto.cep().matches("\\d{5}-\\d{3}")) {
             throw new BusinessException("CEP inválido ou vazio. Deve estar no formato XXXXX-XXX.");
@@ -68,10 +74,6 @@ public class ClienteService {
 
     public ClienteDtoResponse cadastrarCliente(ClienteDtoRequest cliente) throws BusinessException {
         validarClienteDto(cliente);
-        ClienteEntity clienteExistente = clienteRepository.findByCpf(cliente.cpf());
-        if (clienteExistente != null) {
-            throw new BusinessException("Já existe um cliente cadastrado com este CPF");
-        }
         ClienteEntity novoCliente = cliente.toEntity();
         ClienteEntity clienteSalvo = clienteRepository.save(novoCliente);
         return clienteSalvo.toDto();
@@ -80,6 +82,12 @@ public class ClienteService {
     public ClienteDtoResponse atualizarCliente(Long codigoCliente, ClienteDtoRequest clienteDto) throws BusinessException {
         validarClienteDto(clienteDto);
         ClienteEntity clienteExistente = buscarClienteEntity(codigoCliente);
+        if (!clienteExistente.getCpf().equals(clienteDto.cpf()) && clienteRepository.existsByCpf(clienteDto.cpf())) {
+            throw new BusinessException("CPF já cadastrado em outro registro.");
+        }
+        if (!clienteExistente.getEmail().equals(clienteDto.email()) && clienteRepository.existsByEmail(clienteDto.email())) {
+            throw new BusinessException("Email já cadastrado em outro registro.");
+        }
 
         ClienteEntity clienteAtualizado = new ClienteEntity(
             clienteExistente.getCodigoCliente(),
