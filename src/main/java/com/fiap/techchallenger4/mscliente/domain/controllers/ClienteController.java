@@ -36,12 +36,12 @@ public class ClienteController {
         return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCodigo(codigoCliente));
     }
 
-    @GetMapping("cpf/{cpf}")
-    @Operation(summary = "Buscar cliente por CPF")
+    @GetMapping("email/{email}")
+    @Operation(summary = "Buscar cliente por Email")
     @ApiResponseSwaggerOk
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> buscarClientePorCpf(@PathVariable String cpf) {
-        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCpf(cpf));
+    public ResponseEntity<?> buscarClientePorEmail(@PathVariable String email) {
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorEmail(email));
     }
 
     @PostMapping
@@ -58,11 +58,11 @@ public class ClienteController {
         return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarClientePorCodigo(codigoCliente, clienteDto));
     }
 
-    @PutMapping("cpf/{cpf}")
-    @Operation(summary = "Atualizar um cliente pelo CPF")
+    @PutMapping("email/{email}")
+    @Operation(summary = "Atualizar um cliente por Email")
     @ApiResponseSwaggerOk
-    public ResponseEntity<?> atualizarClientePorCpf(@PathVariable String cpf, @RequestBody ClienteDtoRequest clienteDto) {
-        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarClientePorCpf(cpf, clienteDto));
+    public ResponseEntity<?> atualizarClientePorEmail(@PathVariable String email, @RequestBody ClienteDtoRequest clienteDto) {
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarClientePorEmail(email, clienteDto));
     }
 
     @DeleteMapping("/{codigoCliente}")
@@ -75,12 +75,12 @@ public class ClienteController {
         });
     }
 
-    @DeleteMapping("cpf/{cpf}")
-    @Operation(summary = "Excluir um cliente pelo CPF")
+    @DeleteMapping("email/{email}")
+    @Operation(summary = "Excluir um cliente por Email")
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> excluirClientePorCpf(@PathVariable String cpf) {
+    public ResponseEntity<?> excluirClientePorEmail(@PathVariable String email) {
         return SpringControllerUtils.response(HttpStatus.NO_CONTENT, () -> {
-            clienteService.excluirClientePorCpf(cpf);
+            clienteService.excluirClientePorEmail(email);
             return null;
         });
     }

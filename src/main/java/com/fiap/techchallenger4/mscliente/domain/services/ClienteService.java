@@ -24,10 +24,10 @@ public class ClienteService {
         return cliente;
     }
 
-    private ClienteEntity findByCpf(String cpf) throws BusinessException {
-        ClienteEntity cliente = clienteRepository.findByCpf(cpf);
+    private ClienteEntity findByEmail(String email) throws BusinessException {
+        ClienteEntity cliente = clienteRepository.findByEmail(email);
         if (cliente == null) {
-            throw new BusinessException("Cliente com CPF " + cpf + " não encontrado");
+            throw new BusinessException("Cliente com Email " + email + " não encontrado");
         }
         return cliente;
     }
@@ -72,8 +72,8 @@ public class ClienteService {
         return cliente.toDto();
     }
 
-    public ClienteDtoResponse buscarClientePorCpf(String cpf) throws BusinessException {
-        ClienteEntity cliente = findByCpf(cpf);
+    public ClienteDtoResponse buscarClientePorEmail(String email) throws BusinessException {
+        ClienteEntity cliente = findByEmail(email);
         return cliente.toDto();
     }
 
@@ -109,8 +109,8 @@ public class ClienteService {
         return atualizarCliente(clienteDto, clienteExistente);
     }
 
-    public ClienteDtoResponse atualizarClientePorCpf(String cpf, ClienteDtoRequest clienteDto) throws BusinessException {
-        ClienteEntity clienteExistente = findByCpf(cpf);
+    public ClienteDtoResponse atualizarClientePorEmail(String email, ClienteDtoRequest clienteDto) throws BusinessException {
+        ClienteEntity clienteExistente = findByEmail(email);
         return atualizarCliente(clienteDto, clienteExistente);
     }
 
@@ -119,8 +119,8 @@ public class ClienteService {
         clienteRepository.deleteById(codigoCliente);
     }
 
-    public void excluirClientePorCpf(String cpf) throws BusinessException {
-        ClienteEntity cliente = findByCpf(cpf);
+    public void excluirClientePorEmail(String email) throws BusinessException {
+        ClienteEntity cliente = findByEmail(email);
         clienteRepository.delete(cliente);
     }
 }
