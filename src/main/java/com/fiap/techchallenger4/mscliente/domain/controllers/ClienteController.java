@@ -36,6 +36,14 @@ public class ClienteController {
         return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCodigo(codigoCliente));
     }
 
+    @GetMapping("cpf/{cpf}")
+    @Operation(summary = "Buscar cliente por CPF")
+    @ApiResponseSwaggerOk
+    @ApiResponseSwaggerNoContent
+    public ResponseEntity<?> buscarClientePorCpf(@PathVariable String cpf) {
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.buscarClientePorCpf(cpf));
+    }
+
     @PostMapping
     @Operation(summary = "Cadastrar um novo cliente")
     @ApiResponseSwaggerCreate
@@ -44,18 +52,35 @@ public class ClienteController {
     }
 
     @PutMapping("/{codigoCliente}")
-    @Operation(summary = "Atualizar um cliente")
+    @Operation(summary = "Atualizar um cliente pelo Código de Cliente")
     @ApiResponseSwaggerOk
-    public ResponseEntity<?> atualizarCliente(@PathVariable Long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
-        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarCliente(codigoCliente, clienteDto));
+    public ResponseEntity<?> atualizarClientePorCodigo(@PathVariable Long codigoCliente, @RequestBody ClienteDtoRequest clienteDto) {
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarClientePorCodigo(codigoCliente, clienteDto));
+    }
+
+    @PutMapping("cpf/{cpf}")
+    @Operation(summary = "Atualizar um cliente pelo CPF")
+    @ApiResponseSwaggerOk
+    public ResponseEntity<?> atualizarClientePorCpf(@PathVariable String cpf, @RequestBody ClienteDtoRequest clienteDto) {
+        return SpringControllerUtils.response(HttpStatus.OK, () -> clienteService.atualizarClientePorCpf(cpf, clienteDto));
     }
 
     @DeleteMapping("/{codigoCliente}")
-    @Operation(summary = "Excluir um cliente")
+    @Operation(summary = "Excluir um cliente pelo Código de Cliente")
     @ApiResponseSwaggerNoContent
-    public ResponseEntity<?> excluirCliente(@PathVariable Long codigoCliente) {
+    public ResponseEntity<?> excluirClientePorCodigo(@PathVariable Long codigoCliente) {
         return SpringControllerUtils.response(HttpStatus.NO_CONTENT, () -> {
-            clienteService.excluirCliente(codigoCliente);
+            clienteService.excluirClientePorCodigo(codigoCliente);
+            return null;
+        });
+    }
+
+    @DeleteMapping("cpf/{cpf}")
+    @Operation(summary = "Excluir um cliente pelo CPF")
+    @ApiResponseSwaggerNoContent
+    public ResponseEntity<?> excluirClientePorCpf(@PathVariable String cpf) {
+        return SpringControllerUtils.response(HttpStatus.NO_CONTENT, () -> {
+            clienteService.excluirClientePorCpf(cpf);
             return null;
         });
     }
