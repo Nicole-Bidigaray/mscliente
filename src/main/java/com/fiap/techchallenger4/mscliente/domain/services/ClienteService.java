@@ -1,6 +1,7 @@
 package com.fiap.techchallenger4.mscliente.domain.services;
 
 import br.com.fiap.estrutura.exception.BusinessException;
+import br.com.fiap.estrutura.exception.EntidadeNaoEncontrada;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoResponse;
 import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
@@ -19,7 +20,7 @@ public class ClienteService {
     private ClienteEntity findByCodigoCliente(Long codigoCliente) throws BusinessException {
         ClienteEntity cliente = clienteRepository.findByCodigoCliente(codigoCliente);
         if (cliente == null) {
-            throw new BusinessException("Cliente com código " + codigoCliente + " não encontrado");
+            throw new EntidadeNaoEncontrada("Cliente com código " + codigoCliente + " não encontrado");
         }
         return cliente;
     }
@@ -27,16 +28,27 @@ public class ClienteService {
     private ClienteEntity findByEmail(String email) throws BusinessException {
         ClienteEntity cliente = clienteRepository.findByEmail(email);
         if (cliente == null) {
-            throw new BusinessException("Cliente com Email " + email + " não encontrado");
+            throw new EntidadeNaoEncontrada("Cliente com Email " + email + " não encontrado");
         }
         return cliente;
     }
 
     private void verificaDuplicidade(ClienteDtoRequest dto, ClienteEntity clienteExistente) throws BusinessException {
-        if ((clienteExistente == null || !clienteExistente.getCpf().equals(dto.cpf())) && clienteRepository.existsByCpf(dto.cpf()))
-            throw new BusinessException("CPF já cadastrado.");
-        if ((clienteExistente == null || !clienteExistente.getEmail().equals(dto.email())) && clienteRepository.existsByEmail(dto.email()))
-            throw new BusinessException("Email já cadastrado.");
+        if (clienteExistente != null) {
+            if (!clienteExistente.getCpf().equals(dto.cpf()) && clienteRepository.existsByCpf(dto.cpf())) {
+                throw new BusinessException("CPF já cadastrado.");
+            }
+            if (!clienteExistente.getEmail().equals(dto.email()) && clienteRepository.existsByEmail(dto.email())) {
+                throw new BusinessException("Email já cadastrado.");
+            }
+        } else {
+            if (clienteRepository.existsByCpf(dto.cpf())) {
+                throw new BusinessException("CPF já cadastrado.");
+            }
+            if (clienteRepository.existsByEmail(dto.email())) {
+                throw new BusinessException("Email já cadastrado.");
+            }
+        }
     }
 
     private void validarEndereco(ClienteDtoRequest dto) throws BusinessException {
