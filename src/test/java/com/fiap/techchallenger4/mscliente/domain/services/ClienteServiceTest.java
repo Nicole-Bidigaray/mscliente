@@ -82,6 +82,52 @@ class ClienteServiceTest {
     }
 
     @Test
+    void deveLancarExcecaoQuandoEmailJaCadastradoEmOutroCliente() {
+        // Cliente existente com e-mail original
+        ClienteEntity clienteExistente = new ClienteEntity(1L, "Maria Silva", "987.654.321-09", "maria@original.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        // Tentativa de atualizar para um e-mail que já pertence a outro cliente
+        ClienteDtoRequest clienteAtualizacao = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "email@existente.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        // Configurar o repositório para simular que o e-mail já existe no sistema
+        when(clienteRepository.existsByEmail("email@existente.com")).thenReturn(true);
+
+        // Ação e Verificação
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.atualizarCliente(clienteAtualizacao, clienteExistente));
+
+        assertEquals("Email já cadastrado.", exception.getMessage());
+        verify(clienteRepository).existsByEmail("email@existente.com");
+    }
+
+    @Test
+    void deveLancarExcecaoAoTentarAtualizarParaEmailJaUsadoPorOutroCliente() {
+        // Cliente original que será atualizado
+        ClienteEntity clienteExistente = new ClienteEntity(
+                1L, "João Silva", "123.456.789-00", "joao@original.com", "12345-678",
+                "Rua A", "100", "Apto 1", "Bairro B", "Cidade C", "SP", "(11) 91234-5678");
+
+        // DTO com os novos dados, incluindo um e-mail que já está em uso por outro cliente
+        ClienteDtoRequest atualizacaoDto = new ClienteDtoRequest(
+                "João Silva Atualizado", "123.456.789-00", "email@usado.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "SP", "(11) 99876-5432");
+
+        // Configurando o repositório para indicar que o e-mail já está em uso
+        when(clienteRepository.findByEmail("joao@original.com")).thenReturn(clienteExistente);
+        when(clienteRepository.existsByEmail("email@usado.com")).thenReturn(true);
+
+        // Ação e verificação
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.atualizarCliente(atualizacaoDto, clienteExistente));
+
+        assertEquals("Email já cadastrado.", exception.getMessage());
+        verify(clienteRepository).existsByEmail("email@usado.com");
+    }
+
+    @Test
     void deveEncontrarClientePorEmail() throws BusinessException {
         // Configuração
         String email = "cliente@example.com";
@@ -110,6 +156,47 @@ class ClienteServiceTest {
     }
 
     @Test
+    void deveLancarExcecaoQuandoCpfInvalidoOuVazio() {
+        // Testando com CPF vazio
+        ClienteDtoRequest clienteComCpfInvalido = new ClienteDtoRequest(
+                "Maria Silva", "", "maria@example.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComCpfInvalido));
+
+        assertEquals("CPF inválido ou vazio. Deve estar no formato XXX.XXX.XXX-XX.", exception.getMessage());
+
+        // Testando com CPF no formato errado
+        ClienteDtoRequest clienteComCpfFormatoErrado = new ClienteDtoRequest(
+                "Maria Silva", "98765432109", "maria@example.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComCpfFormatoErrado));
+
+        assertEquals("CPF inválido ou vazio. Deve estar no formato XXX.XXX.XXX-XX.", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCpfJaCadastradoEmOutroClienteNaAtualizacao() {
+        // Dados de entrada
+        Long clienteId = 1L;
+        ClienteDtoRequest atualizacaoDto = new ClienteDtoRequest("João Silva", "456.789.123-99", "joao.silva@novoemail.com", "12345-678", "Rua das Flores", "100", "Apto 101", "Centro", "São Paulo", "SP", "(11) 91234-5678");
+
+        ClienteEntity clienteExistente = new ClienteEntity(clienteId, "João Silva", "123.456.789-00", "joao@original.com", "12345-678", "Rua A", "100", "Apto 1", "Bairro B", "Cidade C", "SP", "(11) 91234-5678");
+
+        // Configurando o repository para retornar um cliente diferente para o mesmo CPF
+        when(clienteRepository.findByCodigoCliente(clienteId)).thenReturn(clienteExistente);
+        when(clienteRepository.existsByCpf(atualizacaoDto.cpf())).thenReturn(true);
+
+        // Ação e Verificação
+        BusinessException exception = assertThrows(BusinessException.class, () -> clienteService.atualizarCliente(atualizacaoDto, clienteExistente));
+        assertEquals("CPF já cadastrado.", exception.getMessage());
+        verify(clienteRepository, never()).save(clienteExistente);
+    }
+
+    @Test
     void deveLancarExcecaoQuandoEmailJaCadastrado() {
         // Cliente já existe com o Email
         ClienteDtoRequest novoCliente = new ClienteDtoRequest("Maria Silva", "123.456.789-01", "maria@already.com", "12345-678", "Rua Sol", "100", "", "Centro", "São Paulo", "SP", "(11) 98765-4321");
@@ -118,6 +205,56 @@ class ClienteServiceTest {
         // Ação e Verificação
         BusinessException exception = assertThrows(BusinessException.class, () -> clienteService.cadastrarCliente(novoCliente));
         assertEquals("Email já cadastrado.", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoEmailInvalidoOuVazio() {
+        // Testando com e-mail vazio
+        ClienteDtoRequest clienteComEmailInvalido = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComEmailInvalido));
+
+        assertEquals("Email inválido ou vazio. Formato esperado: exemplo@dominio.com", exception.getMessage());
+
+        // Testando com e-mail no formato errado
+        ClienteDtoRequest clienteComEmailFormatoErrado = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "mariaexample.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComEmailFormatoErrado));
+
+        assertEquals("Email inválido ou vazio. Formato esperado: exemplo@dominio.com", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoEmailJaCadastradoEmOutroClienteNaAtualizacao() {
+        // Dados de entrada
+        Long clienteId = 1L;
+        ClienteDtoRequest atualizacaoDto = new ClienteDtoRequest(
+                "João Silva", "123.456.789-00", "email@usadoporoutro.com",
+                "12345-678", "Rua das Flores", "100", "Apto 101", "Centro",
+                "São Paulo", "SP", "(11) 91234-5678");
+
+        ClienteEntity clienteExistente = new ClienteEntity(
+                clienteId, "João Silva", "123.456.789-00", "joao@original.com",
+                "12345-678", "Rua A", "100", "Apto 1", "Bairro B", "Cidade C",
+                "SP", "(11) 91234-5678");
+
+        // Cliente existente no banco com o email que será testado para duplicidade
+        when(clienteRepository.findByCodigoCliente(clienteId)).thenReturn(clienteExistente);
+        when(clienteRepository.existsByEmail(atualizacaoDto.email())).thenReturn(true);
+
+        // Ação e Verificação
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.atualizarCliente(atualizacaoDto, clienteExistente));
+
+        assertEquals("Email já cadastrado.", exception.getMessage());
+        verify(clienteRepository).existsByEmail(atualizacaoDto.email());
+        verify(clienteRepository, never()).save(clienteExistente);
     }
 
     @Test
@@ -148,6 +285,30 @@ class ClienteServiceTest {
         ClienteDtoRequest dto = new ClienteDtoRequest("Maria Silva", "123.456.789-01", "maria@example.com", "", "Rua Sol", "100", "", "Centro", "São Paulo", "SP", "(11) 98765-4321");
 
         assertThrows(BusinessException.class, () -> clienteService.cadastrarCliente(dto), "CEP inválido ou vazio. Deve estar no formato XXXXX-XXX.");
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCepInvalidoOuVazioAtravesDeCadastro() {
+        ClienteDtoRequest clienteComCepInvalido = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "maria@example.com", "", // CEP vazio
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComCepInvalido));
+
+        assertEquals("CEP inválido ou vazio. Deve estar no formato XXXXX-XXX.", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCepNaoSegueFormato() {
+        ClienteDtoRequest clienteComCepInvalido = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "maria@example.com", "1234567", // CEP no formato errado
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "(21) 98765-4321");
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComCepInvalido));
+
+        assertEquals("CEP inválido ou vazio. Deve estar no formato XXXXX-XXX.", exception.getMessage());
     }
 
     @Test
@@ -190,6 +351,30 @@ class ClienteServiceTest {
         ClienteDtoRequest dto = new ClienteDtoRequest("Maria Silva", "123.456.789-01", "maria@example.com", "12345-678", "Rua Sol", "100", "", "Centro", "São Paulo", "SP", "");
 
         assertThrows(BusinessException.class, () -> clienteService.cadastrarCliente(dto), "Telefone inválido ou vazio. Deve estar no formato (XX) 9XXXX-XXXX.");
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoTelefoneInvalidoOuVazio() {
+        ClienteDtoRequest clienteComTelefoneInvalido = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "maria@example.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", ""); // Telefone vazio
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComTelefoneInvalido));
+
+        assertEquals("Telefone inválido ou vazio. Deve estar no formato (XX) 9XXXX-XXXX.", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoFormatoDeTelefoneIncorreto() {
+        ClienteDtoRequest clienteComTelefoneInvalido = new ClienteDtoRequest(
+                "Maria Silva", "987.654.321-09", "maria@example.com", "12345-678",
+                "Rua Nova", "101", "Apto 2", "Bairro Novo", "Cidade Nova", "RJ", "21987654321"); // Formato de telefone incorreto
+
+        BusinessException exception = assertThrows(BusinessException.class,
+                () -> clienteService.cadastrarCliente(clienteComTelefoneInvalido));
+
+        assertEquals("Telefone inválido ou vazio. Deve estar no formato (XX) 9XXXX-XXXX.", exception.getMessage());
     }
 
     @Test
