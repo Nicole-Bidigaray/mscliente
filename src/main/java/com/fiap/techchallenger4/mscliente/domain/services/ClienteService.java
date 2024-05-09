@@ -1,23 +1,32 @@
 package com.fiap.techchallenger4.mscliente.domain.services;
 
-import br.com.fiap.estrutura.exception.BusinessException;
-import br.com.fiap.estrutura.exception.EntidadeNaoEncontrada;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fiap.techchallenger4.mscliente.domain.consumer.PedidoConsumerFeignClient;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoResponse;
 import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
 import com.fiap.techchallenger4.mscliente.domain.repositories.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import br.com.fiap.estrutura.exception.BusinessException;
+import br.com.fiap.estrutura.exception.EntidadeNaoEncontrada;
 
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
+    private final PedidoConsumerFeignClient pedidoConsumerFeignClient;
 
-    private ClienteEntity findByCodigoCliente(Long codigoCliente) throws BusinessException {
+    @Autowired
+    public ClienteService(ClienteRepository clienteRepository, PedidoConsumerFeignClient pedidoConsumerFeignClient) {
+		this.clienteRepository = clienteRepository;
+		this.pedidoConsumerFeignClient = pedidoConsumerFeignClient;
+	}
+
+	private ClienteEntity findByCodigoCliente(Long codigoCliente) throws BusinessException {
         ClienteEntity cliente = clienteRepository.findByCodigoCliente(codigoCliente);
         if (cliente == null) {
             throw new EntidadeNaoEncontrada("Cliente com código " + codigoCliente + " não encontrado");
@@ -127,12 +136,24 @@ public class ClienteService {
     }
 
     public void excluirClientePorCodigo(Long codigoCliente) throws BusinessException {
-        buscarClientePorCodigo(codigoCliente);
-        clienteRepository.deleteById(codigoCliente);
+        ClienteEntity cliente = findByCodigoCliente(codigoCliente);
+        
+        validarSeClientePossuiPedidos(codigoCliente);
+        
+        clienteRepository.delete(cliente);
     }
+
+	private void validarSeClientePossuiPedidos(Long codigoCliente) throws BusinessException {
+		if(pedidoConsumerFeignClient.clientePossuiPedidos(codigoCliente).get("possui-pedidos")) {
+        	throw new BusinessException("O Cliente não pode ser excluido pois possui pedidos realizados");
+        }
+	}
 
     public void excluirClientePorEmail(String email) throws BusinessException {
         ClienteEntity cliente = findByEmail(email);
+        
+        validarSeClientePossuiPedidos(cliente.getCodigoCliente());
+        
         clienteRepository.delete(cliente);
     }
 }

@@ -1,6 +1,8 @@
 package com.fiap.techchallenger4.mscliente.domain.services;
 
 import br.com.fiap.estrutura.exception.BusinessException;
+
+import com.fiap.techchallenger4.mscliente.domain.consumer.PedidoConsumerFeignClient;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoResponse;
 import com.fiap.techchallenger4.mscliente.domain.entities.ClienteEntity;
@@ -14,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -23,7 +26,8 @@ class ClienteServiceTest {
 
     @Mock
     private ClienteRepository clienteRepository;
-
+    @Mock
+    private PedidoConsumerFeignClient consumerFeignClient;
     @InjectMocks
     ClienteService clienteService;
 
@@ -525,13 +529,13 @@ class ClienteServiceTest {
 
         // Simulando o comportamento do repositório
         when(clienteRepository.findByCodigoCliente(codigoCliente)).thenReturn(clienteMock);
-
+        when(consumerFeignClient.clientePossuiPedidos(codigoCliente)).thenReturn(Map.of("possui-pedidos", false));
         // Ação: chamando o método para excluir o cliente pelo código
         clienteService.excluirClientePorCodigo(codigoCliente);
 
         // Verificando as interações com o mock
         verify(clienteRepository).findByCodigoCliente(codigoCliente);
-        verify(clienteRepository).deleteById(codigoCliente);
+        verify(clienteRepository).delete(any());
     }
 
     @Test
@@ -560,7 +564,7 @@ class ClienteServiceTest {
 
         // Simulando o comportamento do repositório
         when(clienteRepository.findByEmail(email)).thenReturn(clienteMock);
-
+        when(consumerFeignClient.clientePossuiPedidos(any())).thenReturn(Map.of("possui-pedidos", false));
         // Ação: chamando o método para excluir o cliente pelo email
         clienteService.excluirClientePorEmail(email);
 

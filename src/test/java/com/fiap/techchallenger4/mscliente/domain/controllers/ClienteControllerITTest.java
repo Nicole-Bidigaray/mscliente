@@ -203,13 +203,13 @@ class ClienteControllerITTest {
     @Nested
     class ExcluirClientes {
         @Test
-        void deveExcluirCliente() {
+        void naoDeveExcluirClienteCasoServicoPedidosEstejaFora() {
             given()
                     .pathParam("codigoCliente", 1)
             .when()
                     .delete("/clientes/{codigoCliente}")
             .then()
-                    .statusCode(HttpStatus.SC_NO_CONTENT);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -224,14 +224,16 @@ class ClienteControllerITTest {
         }
 
         @Test
-        void deveExcluirClientePorEmail() {
+        void naoDeveExcluirClientePorEmailCasoServicoPedidoEstejaFora() {
             String email = "ana.costa@email.com";
             given()
                     .pathParam("email", email)
             .when()
                     .delete("/clientes/email/{email}")
             .then()
-                    .statusCode(HttpStatus.SC_NO_CONTENT);
+                    .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                    .body("message", is("Connection refused: no further information executing POST http://localhost:8084/cliente/possui-pedidos?codigoCliente=4"))
+                    ;
         }
 
         @Test
