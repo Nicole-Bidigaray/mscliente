@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  #BANCO
+  db-clientes:
+    image: postgres:latest
+    container_name: db-clientes
+    volumes:
+      - postgres_data_clientes:/var/lib/postgresql/data
+    # ports: #caso precise acessar o banco externamente
+    #   - "5432:5432"
+    environment:
+      POSTGRES_DB: mscliente
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    restart: always
+    networks:
+      - sgpism_network
+    
+  #APLICAÇAO
+  mscliente:
+    container_name: mscliente
+    build:
+      context: ./mscliente
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-clientes/mscliente
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    depends_on:
+      - db-clientes
+    restart: always
+    networks:
+      - sgpism_network
+   
+
+##CONFIG NETWORKS
+networks:
+  sgpism_network:
+    driver: bridge
+
+volumes:
+  postgres_data_clientes:
