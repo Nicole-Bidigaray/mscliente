@@ -1,28 +1,35 @@
 package com.fiap.techchallenger4.mscliente.domain.controllers;
 
-import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Profile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import com.fiap.techchallenger4.mscliente.domain.consumer.PedidoConsumerFeignClient;
+import com.fiap.techchallenger4.mscliente.domain.dto.ClienteDtoRequest;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
 @Profile("local")
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ClienteControllerITTest {
-    @LocalServerPort
+	@LocalServerPort
     private int porta;
 
+	@MockBean
+	PedidoConsumerFeignClient feignClient;
     @BeforeEach
     void setUp() {
         RestAssured.port = porta;
@@ -203,17 +210,20 @@ class ClienteControllerITTest {
     @Nested
     class ExcluirClientes {
         @Test
-        void naoDeveExcluirClienteCasoServicoPedidosEstejaFora() {
+        void deveExcluirClienteCaso() {
+			when(feignClient.clientePossuiPedidos(1l)).thenReturn(Map.of("possui-pedidos",false));
+			
             given()
                     .pathParam("codigoCliente", 1)
             .when()
                     .delete("/clientes/{codigoCliente}")
             .then()
-                    .statusCode(HttpStatus.SC_NOT_FOUND);
+                    .statusCode(HttpStatus.SC_NO_CONTENT);
         }
 
         @Test
         void naoDeveExcluirClienteInexistente() {
+			when(feignClient.clientePossuiPedidos(1l)).thenReturn(Map.of("possui-pedidos", false));
             given()
                     .pathParam("codigoCliente", 50000)
             .when()
@@ -224,15 +234,15 @@ class ClienteControllerITTest {
         }
 
         @Test
-        void naoDeveExcluirClientePorEmailCasoServicoPedidoEstejaFora() {
+        void deveExcluirClientePorEmail() {
+			when(feignClient.clientePossuiPedidos(4l)).thenReturn(Map.of("possui-pedidos",false));
             String email = "ana.costa@email.com";
             given()
                     .pathParam("email", email)
             .when()
                     .delete("/clientes/email/{email}")
             .then()
-                    .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                    .body("message", is("Connection refused: no further information executing POST http://localhost:8084/cliente/possui-pedidos?codigoCliente=4"))
+                    .statusCode(HttpStatus.SC_NO_CONTENT)
                     ;
         }
 

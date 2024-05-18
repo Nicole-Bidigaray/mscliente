@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name="PedidoConsumerFeignClient",url="${url.pedido.consumer.feign.client}")
 public interface PedidoConsumerFeignClient {
     
-    @PostMapping("cliente/possui-pedidos")
+    @PostMapping("/cliente/possui-pedidos")
     Map<String, Boolean> clientePossuiPedidos(@RequestParam("codigoCliente") final Long codigoCliente);
 
 }
